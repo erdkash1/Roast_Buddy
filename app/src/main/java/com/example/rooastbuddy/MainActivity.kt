@@ -21,7 +21,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.rooastbuddy.ui.theme.ROoastBuddyTheme
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.ui.unit.width
+import androidx.compose.foundation.background
+import androidx.compose.ui.graphics.Color
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,55 +71,199 @@ fun RoastBuddyApp() {
 
 @Composable
 fun HomeScreen(navController: NavController) {
-    Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Find Your Perfect Cup", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-        Spacer(Modifier.height(8.dp))
-        Text("Discover the 'why' behind the coffee.", fontSize = 16.sp)
-        Spacer(Modifier.height(32.dp))
+        // Hero Section
+        item {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(220.dp)
+                    .background(MaterialTheme.colorScheme.primary)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text("☕", fontSize = 56.sp)
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        "Roast Buddy",
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                    Text(
+                        "Your personal coffee companion",
+                        fontSize = 15.sp,
+                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f),
+                        fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                    )
+                }
+            }
+        }
 
-        Button(
-            onClick = { navController.navigate("quiz") },
-            modifier = Modifier.fillMaxWidth().height(50.dp)
-        ) { Text("Take the Roast Finder Quiz") }
+        // Quick start card
+        item {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .clickable { navController.navigate("quiz") },
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.secondary
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("🎯", fontSize = 40.sp)
+                    Spacer(Modifier.width(16.dp))
+                    Column {
+                        Text(
+                            "Find Your Perfect Coffee",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            color = MaterialTheme.colorScheme.onSecondary
+                        )
+                        Text(
+                            "Take the 3-question Roast Finder Quiz",
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.85f)
+                        )
+                    }
+                    Spacer(Modifier.weight(1f))
+                    Text("→", fontSize = 22.sp, color = MaterialTheme.colorScheme.onSecondary)
+                }
+            }
+        }
 
-        Spacer(Modifier.height(16.dp))
+        // Section title
+        item {
+            Text(
+                "Explore",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 4.dp)
+            )
+        }
 
-        OutlinedButton(
-            onClick = { navController.navigate("catalog") },
-            modifier = Modifier.fillMaxWidth().height(50.dp)
-        ) { Text("Browse Artisanal Catalog") }
+        // 2x2 Feature grid
+        item {
+            val features = listOf(
+                Triple("📦", "Catalog", "catalog"),
+                Triple("❤️", "Wishlist", "wishlist"),
+                Triple("📓", "Journal", "journal"),
+                Triple("📊", "My Stats", "stats")
+            )
 
-        Spacer(Modifier.height(16.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                features.take(2).forEach { (icon, label, route) ->
+                    Card(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(100.dp)
+                            .clickable { navController.navigate(route) },
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(icon, fontSize = 32.sp)
+                            Spacer(Modifier.height(6.dp))
+                            Text(label, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        }
+                    }
+                }
+            }
+            Spacer(Modifier.height(12.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                features.drop(2).forEach { (icon, label, route) ->
+                    Card(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(100.dp)
+                            .clickable { navController.navigate(route) },
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(icon, fontSize = 32.sp)
+                            Spacer(Modifier.height(6.dp))
+                            Text(label, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        }
+                    }
+                }
+            }
+            Spacer(Modifier.height(12.dp))
+        }
 
-        OutlinedButton(
-            onClick = { navController.navigate("journal") },
-            modifier = Modifier.fillMaxWidth().height(50.dp)
-        ) { Text("My Tasting Journal") }
-
-        Spacer(Modifier.height(16.dp))
-
-        OutlinedButton(
-            onClick = { navController.navigate("education") },
-            modifier = Modifier.fillMaxWidth().height(50.dp)
-        ) { Text("Education Hub") }
-
-        Spacer(Modifier.height(16.dp))
-
-        OutlinedButton(
-            onClick = { navController.navigate("wishlist") },
-            modifier = Modifier.fillMaxWidth().height(50.dp)
-        ) { Text("My Wishlist") }
-
-        Spacer(Modifier.height(16.dp))
-
-        OutlinedButton(
-            onClick = { navController.navigate("stats") },
-            modifier = Modifier.fillMaxWidth().height(50.dp)
-        ) { Text("📊 My Coffee Stats") }
+        // Education Hub banner
+        item {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .clickable { navController.navigate("education") },
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("🎓", fontSize = 36.sp)
+                    Spacer(Modifier.width(12.dp))
+                    Column {
+                        Text(
+                            "Education Hub",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                        Text(
+                            "Articles & videos to deepen your coffee knowledge",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                        )
+                    }
+                    Spacer(Modifier.weight(1f))
+                    Text("→", fontSize = 22.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                }
+            }
+            Spacer(Modifier.height(24.dp))
+        }
     }
 }
 
