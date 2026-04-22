@@ -190,15 +190,32 @@ fun ResultScreen(navController: NavController, viewModel: CoffeeViewModel) {
                     Text(recommendation ?: "No recommendation received.")
                 }
             }
-            Spacer(Modifier.height(32.dp))
-            Button(onClick = { navController.navigate("catalog") }) {
+            Spacer(Modifier.height(16.dp))
+
+            Button(
+                onClick = { navController.navigate("catalog") },
+                modifier = Modifier.fillMaxWidth().height(50.dp)
+            ) {
                 Text("See Full Catalog")
+            }
+
+            Spacer(Modifier.height(12.dp))
+
+            OutlinedButton(
+                onClick = {
+                    viewModel.quizAnswers.clear()
+                    navController.navigate("home") {
+                        popUpTo("home") { inclusive = true }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth().height(50.dp)
+            ) {
+                Text("Back to Home")
             }
         }
     }
 }
 
-// ── Catalog ───────────────────────────────────────────────────────────────────
 
 // ── Catalog ───────────────────────────────────────────────────────────────────
 
