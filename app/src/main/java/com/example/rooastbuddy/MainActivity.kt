@@ -19,18 +19,22 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.rooastbuddy.ui.theme.ROoastBuddyTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { RoastBuddyApp() }
+        setContent {
+            ROoastBuddyTheme {
+                RoastBuddyApp()
+            }
+        }
     }
 }
 
 @Composable
 fun RoastBuddyApp() {
     val navController = rememberNavController()
-    // Single shared ViewModel across all screens
     val viewModel: CoffeeViewModel = viewModel()
 
     Scaffold(
@@ -53,10 +57,14 @@ fun RoastBuddyApp() {
             composable("quiz")    { QuizScreen(navController, viewModel) }
             composable("result")  { ResultScreen(navController, viewModel) }
             composable("catalog") { CatalogScreen(navController, viewModel) }
+            composable("journal") { JournalScreen(navController) }
+            composable("education") { EducationScreen(navController) }
+            composable("wishlist") { WishlistScreen(navController) }
         }
     }
 }
 
+// ── Home ─────────────────────────────────────────────────────────────────────
 
 @Composable
 fun HomeScreen(navController: NavController) {
@@ -81,9 +89,31 @@ fun HomeScreen(navController: NavController) {
             onClick = { navController.navigate("catalog") },
             modifier = Modifier.fillMaxWidth().height(50.dp)
         ) { Text("Browse Artisanal Catalog") }
+
+        Spacer(Modifier.height(16.dp))
+
+        OutlinedButton(
+            onClick = { navController.navigate("journal") },
+            modifier = Modifier.fillMaxWidth().height(50.dp)
+        ) { Text("My Tasting Journal") }
+
+        Spacer(Modifier.height(16.dp))
+
+        OutlinedButton(
+            onClick = { navController.navigate("education") },
+            modifier = Modifier.fillMaxWidth().height(50.dp)
+        ) { Text("Education Hub") }
+
+        Spacer(Modifier.height(16.dp))
+
+        OutlinedButton(
+            onClick = { navController.navigate("wishlist") },
+            modifier = Modifier.fillMaxWidth().height(50.dp)
+        ) { Text("My Wishlist") }
     }
 }
 
+// ── Quiz ─────────────────────────────────────────────────────────────────────
 
 private val questions = listOf(
     "How do you brew your coffee?" to
@@ -97,7 +127,6 @@ private val questions = listOf(
 @Composable
 fun QuizScreen(navController: NavController, viewModel: CoffeeViewModel) {
     var currentQ by remember { mutableIntStateOf(0) }
-
     val (questionText, options) = questions[currentQ]
 
     Column(
@@ -134,6 +163,7 @@ fun QuizScreen(navController: NavController, viewModel: CoffeeViewModel) {
     }
 }
 
+// ── Result ────────────────────────────────────────────────────────────────────
 
 @Composable
 fun ResultScreen(navController: NavController, viewModel: CoffeeViewModel) {
@@ -168,15 +198,523 @@ fun ResultScreen(navController: NavController, viewModel: CoffeeViewModel) {
     }
 }
 
+// ── Catalog ───────────────────────────────────────────────────────────────────
+
+// ── Catalog ───────────────────────────────────────────────────────────────────
 
 @Composable
 fun CatalogScreen(navController: NavController, viewModel: CoffeeViewModel) {
     val catalog by viewModel.catalog.collectAsState()
     val isLoading by viewModel.isLoadingCatalog.collectAsState()
+    var selectedRoast by remember { mutableStateOf("All") }
+    var selectedCoffee by remember { mutableStateOf<Coffee?>(null) }
 
     LaunchedEffect(Unit) {
         viewModel.fetchCatalog()
     }
+
+    // Show detail screen if a coffee is selected
+    if (selectedCoffee != null) {
+        CoffeeDetailScreen(
+            coffee = selectedCoffee!!,
+            onBack = { selectedCoffee = null }
+        )
+        return
+    }
+
+    val filtered = if (selectedRoast == "All") catalog
+    else catalog.filter { it.roast == selectedRoast }
+
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        // Header
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                TextButton(onClick = { navController.popBackStack() }) { Text("< Back") }
+                Text(
+                    "Curated Roasts",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
+        }
+
+        // Filter chips
+        item {
+            androidx.compose.foundation.lazy.LazyRow(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(listOf("All", "Light", "Medium", "Dark")) { roast ->
+                    FilterChip(
+                        selected = selectedRoast == roast,
+                        onClick = { selectedRoast = roast },
+                        label = { Text(roast) }
+                    )
+                }
+            }
+            Spacer(Modifier.height(8.dp))
+        }
+
+        // Loading or empty state
+        if (isLoading) {
+            item {
+                Box(
+                    Modifier.fillMaxWidth().height(300.dp),
+                    contentAlignment = Alignment.Center
+                ) { CircularProgressIndicator() }
+            }
+        } else if (filtered.isEmpty()) {
+            item {
+                Box(
+                    Modifier.fillMaxWidth().height(300.dp),
+                    contentAlignment = Alignment.Center
+                ) { Text("No coffees found.") }
+            }
+        } else {
+            items(filtered) { coffee ->
+                CoffeeCard(coffee = coffee, onClick = { selectedCoffee = coffee })
+            }
+        }
+    }
+}
+
+@Composable
+fun CoffeeCard(coffee: Coffee, onClick: () -> Unit) {
+    val roastColor = when (coffee.roast) {
+        "Light" -> MaterialTheme.colorScheme.tertiary
+        "Medium" -> MaterialTheme.colorScheme.secondary
+        "Dark" -> MaterialTheme.colorScheme.error
+        else -> MaterialTheme.colorScheme.primary
+    }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clickable { onClick() },
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    coffee.name,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.weight(1f)
+                )
+                Surface(
+                    color = roastColor.copy(alpha = 0.15f),
+                    shape = MaterialTheme.shapes.small
+                ) {
+                    Text(
+                        "${coffee.roast} Roast",
+                        fontSize = 11.sp,
+                        color = roastColor,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+            }
+            Spacer(Modifier.height(4.dp))
+            Text(
+                coffee.notes,
+                color = MaterialTheme.colorScheme.secondary,
+                fontSize = 14.sp
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                coffee.description,
+                fontSize = 13.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                "Tap to see details →",
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+}
+
+@Composable
+fun CoffeeDetailScreen(coffee: Coffee, onBack: () -> Unit) {
+    val viewModel: JournalViewModel = viewModel()
+    val isInWishlist by viewModel.isInWishlist(coffee.name).collectAsState(initial = false)
+
+    val roastColor = when (coffee.roast) {
+        "Light" -> MaterialTheme.colorScheme.tertiary
+        "Medium" -> MaterialTheme.colorScheme.secondary
+        "Dark" -> MaterialTheme.colorScheme.error
+        else -> MaterialTheme.colorScheme.primary
+    }
+
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        TextButton(onClick = onBack) { Text("< Back to Catalog") }
+        Spacer(Modifier.height(16.dp))
+        Text(coffee.name, fontSize = 28.sp, fontWeight = FontWeight.Bold)
+        Spacer(Modifier.height(8.dp))
+
+        Surface(
+            color = roastColor.copy(alpha = 0.15f),
+            shape = MaterialTheme.shapes.small
+        ) {
+            Text(
+                "${coffee.roast} Roast",
+                fontSize = 14.sp,
+                color = roastColor,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+            )
+        }
+
+        Spacer(Modifier.height(24.dp))
+
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text("Tasting Notes", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Spacer(Modifier.height(8.dp))
+                Text(coffee.notes, fontSize = 15.sp, color = MaterialTheme.colorScheme.secondary)
+            }
+        }
+
+        Spacer(Modifier.height(12.dp))
+
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text("About this Coffee", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Spacer(Modifier.height(8.dp))
+                Text(coffee.description, fontSize = 15.sp)
+            }
+        }
+
+        Spacer(Modifier.height(12.dp))
+
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text("Brew Recommendation", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    when (coffee.roast) {
+                        "Light" -> "Best with Pour-Over or Aeropress to highlight delicate floral and fruit notes."
+                        "Medium" -> "Great with Drip or French Press for a balanced, smooth cup."
+                        "Dark" -> "Perfect for Espresso or French Press to bring out bold, rich flavors."
+                        else -> "Try different brew methods to find your favorite."
+                    },
+                    fontSize = 14.sp
+                )
+            }
+        }
+
+        Spacer(Modifier.height(24.dp))
+
+        Button(
+            onClick = {
+                if (isInWishlist) viewModel.removeFromWishlist(
+                    WishlistItem(coffee.name, coffee.roast, coffee.notes, coffee.description)
+                ) else viewModel.addToWishlist(coffee)
+            },
+            modifier = Modifier.fillMaxWidth().height(50.dp),
+            colors = if (isInWishlist) ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondary
+            ) else ButtonDefaults.buttonColors()
+        ) {
+            Text(if (isInWishlist) "✓ Remove from Wishlist" else "Add to Wishlist")
+        }
+
+        Spacer(Modifier.height(12.dp))
+
+        OutlinedButton(
+            onClick = { },
+            modifier = Modifier.fillMaxWidth().height(50.dp)
+        ) { Text("Mock Checkout (Coming Soon)") }
+    }
+}
+// ── Journal ───────────────────────────────────────────────────────────────────
+
+@Composable
+fun JournalScreen(navController: NavController) {
+    val viewModel: JournalViewModel = viewModel()
+    val entries by viewModel.entries.collectAsState()
+    var showForm by remember { mutableStateOf(false) }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            TextButton(onClick = { navController.popBackStack() }) { Text("< Back") }
+            Text("Tasting Journal", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+            TextButton(onClick = { showForm = true }) { Text("+ Add") }
+        }
+
+        if (showForm) {
+            AddEntryForm(
+                onSave = { name, roast, rating, notes ->
+                    viewModel.addEntry(name, roast, rating, notes)
+                    showForm = false
+                },
+                onCancel = { showForm = false }
+            )
+        }
+
+        if (entries.isEmpty()) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("No entries yet. Tap + Add to log a coffee!")
+            }
+        } else {
+            LazyColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+                items(entries) { entry ->
+                    Card(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(entry.coffeeName, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                                Text(entry.date, fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary)
+                            }
+                            Text("${entry.roastLevel} Roast", color = MaterialTheme.colorScheme.primary)
+                            Text("⭐".repeat(entry.rating), fontSize = 18.sp)
+                            if (entry.notes.isNotEmpty()) {
+                                Spacer(Modifier.height(4.dp))
+                                Text(entry.notes, fontSize = 14.sp)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun AddEntryForm(onSave: (String, String, Int, String) -> Unit, onCancel: () -> Unit) {
+    var coffeeName by remember { mutableStateOf("") }
+    var roastLevel by remember { mutableStateOf("Medium") }
+    var rating by remember { mutableIntStateOf(3) }
+    var notes by remember { mutableStateOf("") }
+
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text("Log a Coffee", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            Spacer(Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = coffeeName,
+                onValueChange = { coffeeName = it },
+                label = { Text("Coffee Name") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(Modifier.height(8.dp))
+
+            Text("Roast Level")
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                listOf("Light", "Medium", "Dark").forEach { roast ->
+                    FilterChip(
+                        selected = roastLevel == roast,
+                        onClick = { roastLevel = roast },
+                        label = { Text(roast) }
+                    )
+                }
+            }
+            Spacer(Modifier.height(8.dp))
+
+            Text("Rating: ${"⭐".repeat(rating)}")
+            Slider(
+                value = rating.toFloat(),
+                onValueChange = { rating = it.toInt() },
+                valueRange = 1f..5f,
+                steps = 3
+            )
+
+            OutlinedTextField(
+                value = notes,
+                onValueChange = { notes = it },
+                label = { Text("Tasting Notes") },
+                modifier = Modifier.fillMaxWidth(),
+                minLines = 2
+            )
+            Spacer(Modifier.height(12.dp))
+
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(
+                    onClick = {
+                        if (coffeeName.isNotEmpty()) {
+                            onSave(coffeeName, roastLevel, rating, notes)
+                        }
+                    },
+                    modifier = Modifier.weight(1f)
+                ) { Text("Save") }
+
+                OutlinedButton(
+                    onClick = onCancel,
+                    modifier = Modifier.weight(1f)
+                ) { Text("Cancel") }
+            }
+        }
+    }
+}
+
+// ── Education Hub ─────────────────────────────────────────────────────────────
+
+data class EducationItem(
+    val title: String,
+    val description: String,
+    val url: String,
+    val category: String
+)
+
+@Composable
+fun EducationScreen(navController: NavController) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+
+    val articles = listOf(
+        EducationItem(
+            title = "Light vs Dark Roast: What's the Difference?",
+            description = "Learn how roast level affects flavor, caffeine, and acidity.",
+            url = "https://www.ncausa.org/About-Coffee/Coffee-Roasts-Guide",
+            category = "Roast Guide"
+        ),
+        EducationItem(
+            title = "The Science of Pour-Over Coffee",
+            description = "Why pour-over brings out the best in light roasts.",
+            url = "https://www.homegrounds.co/pour-over-coffee-guide/",
+            category = "Brew Methods"
+        ),
+        EducationItem(
+            title = "How to Taste Coffee Like a Pro",
+            description = "A beginner's guide to coffee cupping and tasting notes.",
+            url = "https://www.seriouseats.com/how-to-taste-coffee",
+            category = "Tasting"
+        ),
+        EducationItem(
+            title = "Ethiopian Coffee: Origins & Flavor",
+            description = "Discover why Ethiopia is considered the birthplace of coffee.",
+            url = "https://www.homegrounds.co/ethiopian-coffee/",
+            category = "Origins"
+        ),
+        EducationItem(
+            title = "Beginner's Guide to Coffee Grinders",
+            description = "How grind size affects your brew and which grinder to buy.",
+            url = "https://www.homegrounds.co/best-coffee-grinder/",
+            category = "Equipment"
+        ),
+        EducationItem(
+            title = "Video: How Coffee is Made (Seed to Cup)",
+            description = "Watch the full journey of coffee from farm to your cup.",
+            url = "https://www.youtube.com/watch?v=R3NeHAFkBxA",
+            category = "Video"
+        )
+    )
+
+    val categories = articles.map { it.category }.distinct()
+    var selectedCategory by remember { mutableStateOf("All") }
+    val filtered = if (selectedCategory == "All") articles
+    else articles.filter { it.category == selectedCategory }
+
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        // Header
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                TextButton(onClick = { navController.popBackStack() }) { Text("< Back") }
+                Text(
+                    "Education Hub",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
+        }
+
+        // Scrollable filter chips
+        item {
+            androidx.compose.foundation.lazy.LazyRow(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                item {
+                    FilterChip(
+                        selected = selectedCategory == "All",
+                        onClick = { selectedCategory = "All" },
+                        label = { Text("All") }
+                    )
+                }
+                items(categories) { cat ->
+                    FilterChip(
+                        selected = selectedCategory == cat,
+                        onClick = { selectedCategory = cat },
+                        label = { Text(cat) }
+                    )
+                }
+            }
+            Spacer(Modifier.height(8.dp))
+        }
+
+        // Articles
+        items(filtered) { item ->
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .clickable {
+                        val intent = android.content.Intent(
+                            android.content.Intent.ACTION_VIEW,
+                            android.net.Uri.parse(item.url)
+                        )
+                        context.startActivity(intent)
+                    },
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            item.category,
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            if (item.category == "Video") "▶ Watch" else "→ Read",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                    Spacer(Modifier.height(4.dp))
+                    Text(item.title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Spacer(Modifier.height(4.dp))
+                    Text(item.description, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        }
+    }
+}
+@Composable
+fun WishlistScreen(navController: NavController) {
+    val viewModel: JournalViewModel = viewModel()
+    val wishlist by viewModel.wishlist.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
@@ -185,42 +723,37 @@ fun CatalogScreen(navController: NavController, viewModel: CoffeeViewModel) {
         ) {
             TextButton(onClick = { navController.popBackStack() }) { Text("< Back") }
             Text(
-                "Curated Roasts",
+                "My Wishlist",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(start = 8.dp)
             )
         }
 
-        if (isLoading) {
+        if (wishlist.isEmpty()) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-        } else if (catalog.isEmpty()) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No coffees found. Check Firestore setup.")
+                Text("No items yet. Browse the catalog and add coffees!")
             }
         } else {
             LazyColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
-                items(catalog) { coffee ->
+                items(wishlist) { item ->
                     Card(
                         modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(
-                                "${coffee.name} (${coffee.roast})",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Medium
-                            )
-                            Spacer(Modifier.height(4.dp))
-                            Text(
-                                coffee.notes,
-                                color = MaterialTheme.colorScheme.secondary,
-                                fontSize = 14.sp
-                            )
-                            Spacer(Modifier.height(4.dp))
-                            Text(coffee.description, fontSize = 13.sp)
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(item.name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                                Text("${item.roast} Roast", color = MaterialTheme.colorScheme.secondary)
+                                Text(item.notes, fontSize = 13.sp)
+                            }
+                            IconButton(onClick = { viewModel.removeFromWishlist(item) }) {
+                                Text("✕", color = MaterialTheme.colorScheme.error)
+                            }
                         }
                     }
                 }

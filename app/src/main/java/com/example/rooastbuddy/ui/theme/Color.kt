@@ -2,10 +2,17 @@ package com.example.rooastbuddy.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+// Pine/Juniper Greens
+val PineGreen = Color(0xFF2D6A4F)
+val JuniperGreen = Color(0xFF40916C)
+val LightGreen = Color(0xFF74C69D)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+// Bistre/Coffee Browns
+val Bistre = Color(0xFF3E1C00)
+val CoffeeBrown = Color(0xFF6F4E37)
+val LightBrown = Color(0xFFA0522D)
+
+// Neutrals
+val Cream = Color(0xFFF5F0E8)
+val LightCream = Color(0xFFFFFBF5)
+val DarkBrown = Color(0xFF1A0A00)
