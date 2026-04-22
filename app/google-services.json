@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "675660240245",
+    "project_id": "rooastbuddy",
+    "storage_bucket": "rooastbuddy.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:675660240245:android:d4495e4106a33cbddfef3c",
+        "android_client_info": {
+          "package_name": "com.example.rooastbuddy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgkKc-0To--F8Ywx4trbjD8eqrTcCrzO8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
