@@ -22,7 +22,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.rooastbuddy.ui.theme.ROoastBuddyTheme
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.foundation.background
-import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.layout.size
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -1109,6 +1110,247 @@ fun StatsScreen(navController: NavController) {
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+// ── Profile Setup ─────────────────────────────────────────────────────────────
+
+@Composable
+fun ProfileSetupScreen(navController: NavController) {
+    val profileViewModel: ProfileViewModel = viewModel()
+    var name by remember { mutableStateOf("") }
+    var selectedBrew by remember { mutableStateOf("Pour-Over") }
+    var selectedLevel by remember { mutableStateOf("Beginner") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text("☕", fontSize = 64.sp)
+        Spacer(Modifier.height(16.dp))
+        Text(
+            "Welcome to Roast Buddy!",
+            fontSize = 26.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Spacer(Modifier.height(8.dp))
+        Text(
+            "Let's set up your coffee profile",
+            fontSize = 15.sp,
+            color = MaterialTheme.colorScheme.secondary,
+            fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+        )
+        Spacer(Modifier.height(32.dp))
+
+        OutlinedTextField(
+            value = name,
+            onValueChange = { name = it },
+            label = { Text("Your Name") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            leadingIcon = { Text("👤") }
+        )
+
+        Spacer(Modifier.height(20.dp))
+        Text(
+            "Preferred Brew Method",
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(Modifier.height(8.dp))
+        androidx.compose.foundation.lazy.LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(listOf("Pour-Over", "French Press", "Espresso", "Drip")) { brew ->
+                FilterChip(
+                    selected = selectedBrew == brew,
+                    onClick = { selectedBrew = brew },
+                    label = { Text(brew) }
+                )
+            }
+        }
+
+        Spacer(Modifier.height(20.dp))
+        Text(
+            "Experience Level",
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(Modifier.height(8.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            listOf("Beginner", "Intermediate", "Expert").forEach { level ->
+                FilterChip(
+                    selected = selectedLevel == level,
+                    onClick = { selectedLevel = level },
+                    label = { Text(level) }
+                )
+            }
+        }
+
+        Spacer(Modifier.height(32.dp))
+
+        Button(
+            onClick = {
+                if (name.isNotEmpty()) {
+                    profileViewModel.saveProfile(name, selectedBrew, selectedLevel)
+                    navController.navigate("home") {
+                        popUpTo("setup") { inclusive = true }
+                    }
+                }
+            },
+            modifier = Modifier.fillMaxWidth().height(52.dp)
+        ) {
+            Text("Let's Go! ☕", fontSize = 16.sp)
+        }
+    }
+}
+
+// ── Profile Screen ────────────────────────────────────────────────────────────
+
+@Composable
+fun ProfileScreen(navController: NavController) {
+    val profileViewModel: ProfileViewModel = viewModel()
+    val userName by profileViewModel.userName.collectAsState()
+    val brewMethod by profileViewModel.brewMethod.collectAsState()
+    val experienceLevel by profileViewModel.experienceLevel.collectAsState()
+
+    var editMode by remember { mutableStateOf(false) }
+    var newName by remember { mutableStateOf(userName) }
+    var newBrew by remember { mutableStateOf(brewMethod) }
+    var newLevel by remember { mutableStateOf(experienceLevel) }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            TextButton(onClick = { navController.popBackStack() }) { Text("< Back") }
+            Text(
+                "My Profile",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(start = 8.dp)
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(Modifier.height(16.dp))
+
+            // Avatar
+            Box(
+                modifier = Modifier
+                    .size(100.dp)
+                    .background(
+                        MaterialTheme.colorScheme.primaryContainer,
+                        shape = androidx.compose.foundation.shape.CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("☕", fontSize = 48.sp)
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            if (!editMode) {
+                Text(userName, fontSize = 26.sp, fontWeight = FontWeight.Bold)
+                Text(experienceLevel, color = MaterialTheme.colorScheme.primary, fontSize = 16.sp)
+                Text("Prefers $brewMethod", color = MaterialTheme.colorScheme.secondary, fontSize = 14.sp)
+
+                Spacer(Modifier.height(32.dp))
+
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text("Profile Details", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        Spacer(Modifier.height(12.dp))
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                            Text("Name", color = MaterialTheme.colorScheme.secondary)
+                            Text(userName, fontWeight = FontWeight.Medium)
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                            Text("Brew Method", color = MaterialTheme.colorScheme.secondary)
+                            Text(brewMethod, fontWeight = FontWeight.Medium)
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                            Text("Experience", color = MaterialTheme.colorScheme.secondary)
+                            Text(experienceLevel, fontWeight = FontWeight.Medium)
+                        }
+                    }
+                }
+
+                Spacer(Modifier.height(24.dp))
+
+                Button(
+                    onClick = {
+                        newName = userName
+                        newBrew = brewMethod
+                        newLevel = experienceLevel
+                        editMode = true
+                    },
+                    modifier = Modifier.fillMaxWidth().height(50.dp)
+                ) { Text("Edit Profile") }
+
+            } else {
+                OutlinedTextField(
+                    value = newName,
+                    onValueChange = { newName = it },
+                    label = { Text("Name") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+                Spacer(Modifier.height(16.dp))
+                Text("Brew Method", fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth())
+                Spacer(Modifier.height(8.dp))
+                androidx.compose.foundation.lazy.LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(listOf("Pour-Over", "French Press", "Espresso", "Drip")) { brew ->
+                        FilterChip(
+                            selected = newBrew == brew,
+                            onClick = { newBrew = brew },
+                            label = { Text(brew) }
+                        )
+                    }
+                }
+                Spacer(Modifier.height(16.dp))
+                Text("Experience Level", fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth())
+                Spacer(Modifier.height(8.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    listOf("Beginner", "Intermediate", "Expert").forEach { level ->
+                        FilterChip(
+                            selected = newLevel == level,
+                            onClick = { newLevel = level },
+                            label = { Text(level) }
+                        )
+                    }
+                }
+                Spacer(Modifier.height(24.dp))
+                Button(
+                    onClick = {
+                        if (newName.isNotEmpty()) {
+                            profileViewModel.saveProfile(newName, newBrew, newLevel)
+                            editMode = false
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth().height(50.dp)
+                ) { Text("Save Changes") }
+                Spacer(Modifier.height(12.dp))
+                OutlinedButton(
+                    onClick = { editMode = false },
+                    modifier = Modifier.fillMaxWidth().height(50.dp)
+                ) { Text("Cancel") }
             }
         }
     }
