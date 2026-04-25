@@ -34,10 +34,13 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
 @Composable
 fun RoastBuddyApp() {
     val navController = rememberNavController()
     val viewModel: CoffeeViewModel = viewModel()
+    val profileViewModel: ProfileViewModel = viewModel()
+    val userName by profileViewModel.userName.collectAsState()
 
     Scaffold(
         topBar = {
@@ -46,31 +49,43 @@ fun RoastBuddyApp() {
                 title = { Text("Roast Buddy", fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
+                ),
+                actions = {
+                    if (userName.isNotEmpty()) {
+                        TextButton(onClick = { navController.navigate("profile") }) {
+                            Text("👤 ${userName.split(" ").first()}", color = MaterialTheme.colorScheme.onPrimaryContainer)
+                        }
+                    }
+                }
             )
         }
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = "home",
+            startDestination = if (userName.isEmpty()) "setup" else "home",
             modifier = Modifier.padding(paddingValues)
         ) {
-            composable("home")    { HomeScreen(navController) }
-            composable("quiz")    { QuizScreen(navController, viewModel) }
-            composable("result")  { ResultScreen(navController, viewModel) }
-            composable("catalog") { CatalogScreen(navController, viewModel) }
-            composable("journal") { JournalScreen(navController) }
+            composable("setup")     { ProfileSetupScreen(navController) }
+            composable("home")      { HomeScreen(navController, profileViewModel) }
+            composable("quiz")      { QuizScreen(navController, viewModel) }
+            composable("result")    { ResultScreen(navController, viewModel) }
+            composable("catalog")   { CatalogScreen(navController, viewModel) }
+            composable("journal")   { JournalScreen(navController) }
             composable("education") { EducationScreen(navController) }
-            composable("wishlist") { WishlistScreen(navController) }
-            composable("stats") { StatsScreen(navController) }
+            composable("wishlist")  { WishlistScreen(navController) }
+            composable("stats")     { StatsScreen(navController) }
+            composable("profile")   { ProfileScreen(navController) }
         }
     }
 }
-
 // ── Home ─────────────────────────────────────────────────────────────────────
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(navController: NavController, profileViewModel: ProfileViewModel) {
+    val userName by profileViewModel.userName.collectAsState()
+    val brewMethod by profileViewModel.brewMethod.collectAsState()
+    val experienceLevel by profileViewModel.experienceLevel.collectAsState()
+
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -93,14 +108,14 @@ fun HomeScreen(navController: NavController) {
                     Text("☕", fontSize = 56.sp)
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        "Roast Buddy",
-                        fontSize = 32.sp,
+                        "Welcome back, ${userName.split(" ").first()}!",
+                        fontSize = 28.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onPrimary
                     )
                     Text(
-                        "Your personal coffee companion",
-                        fontSize = 15.sp,
+                        "$experienceLevel coffee lover • $brewMethod",
+                        fontSize = 13.sp,
                         color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.85f),
                         fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
                     )
