@@ -6,7 +6,7 @@
 
 ## 📱 Overview
 
-Roast Buddy is an Android app that helps coffee lovers discover the right coffee for their taste and brewing style. Instead of overwhelming users with choices, it guides them through a personalized quiz, explains every recommendation, and provides tools to track, learn, and build their coffee journey over time.
+Roast Buddy is an Android app that helps coffee lovers discover the right coffee for their taste and brewing style. Instead of overwhelming users with choices, it guides them through a personalized quiz, explains every recommendation, and provides tools to track, learn, and build their coffee journey over time. On first launch, users create a personal profile that personalizes the entire experience.
  
 ---
 
@@ -14,6 +14,7 @@ Roast Buddy is an Android app that helps coffee lovers discover the right coffee
 
 | Feature | Description |
 |---|---|
+| 👤 **User Profile** | Create a personal profile with name, preferred brew method, and experience level — saved with DataStore and shown on every launch |
 | 🎯 **Roast Finder Quiz** | 3-question quiz mapping brew method, flavor preference, and strength to a personalized coffee recommendation with explanation |
 | 📦 **Artisanal Catalog** | 6 curated coffees fetched from Firebase Firestore with roast filters, search, detail views, and brew recommendations |
 | ❤️ **Wishlist** | Save favorite coffees to a persistent on-device wishlist powered by Room database |
@@ -31,6 +32,7 @@ Roast Buddy is an Android app that helps coffee lovers discover the right coffee
 | **UI** | Jetpack Compose + Material 3 |
 | **Navigation** | Navigation Compose |
 | **State Management** | ViewModel + StateFlow |
+| **User Preferences** | DataStore (user profile persistence) |
 | **Local Database** | Room (Journal entries + Wishlist) |
 | **Cloud Database** | Firebase Firestore (Coffee catalog) |
 | **AI / Networking** | Gemini API via OkHttp |
@@ -45,6 +47,8 @@ com.example.rooastbuddy/
 ├── MainActivity.kt          # All UI screens (Compose)
 ├── CoffeeViewModel.kt       # Quiz logic, Firestore catalog, AI recommendation
 ├── JournalViewModel.kt      # Journal + Wishlist state management
+├── ProfileViewModel.kt      # User profile state management
+├── UserPreferences.kt       # DataStore — user profile persistence
 ├── JournalEntry.kt          # Room entity — tasting journal
 ├── WishlistItem.kt          # Room entity — wishlist
 ├── JournalDao.kt            # Room DAO — journal + wishlist queries
@@ -99,15 +103,19 @@ com.example.rooastbuddy/
 
 ---
 
-## 📸 App Screens
+## 📱 App Screens
 
-| Home | Quiz | Recommendation |
+| Setup | Home | Quiz |
 |---|---|---|
-| Hero banner with feature cards | 3-question preference quiz | AI-powered match with explanation |
+| Profile setup on first launch | Personalized welcome with feature cards | 3-question preference quiz |
 
-| Catalog | Journal | Stats |
+| Recommendation | Catalog | Journal |
 |---|---|---|
-| Firestore catalog with filters | Log coffees with star ratings | Personal analytics dashboard |
+| Smart match with explanation | Firestore catalog with filters & search | Log coffees with star ratings |
+
+| Wishlist | Stats | Education |
+|---|---|---|
+| Saved coffees from catalog | Personal analytics dashboard | Articles and videos hub |
  
 ---
 
@@ -116,10 +124,10 @@ com.example.rooastbuddy/
 ```
 UI (Compose Screens)
         ↕
-ViewModel (CoffeeViewModel / JournalViewModel)
-        ↕                    ↕
-Firebase Firestore      Room Database
-(Coffee Catalog)    (Journal + Wishlist)
+ViewModel (CoffeeViewModel / JournalViewModel / ProfileViewModel)
+        ↕                    ↕                    ↕
+Firebase Firestore      Room Database         DataStore
+(Coffee Catalog)    (Journal + Wishlist)   (User Profile)
         ↕
   Gemini AI API
 (Recommendations)
@@ -134,11 +142,12 @@ Firebase Firestore      Room Database
 - **Mock checkout** — order flow with cart and confirmation screen
 - **Coffee map** — interactive map showing origins tied to catalog entries
 - **Dark mode** — toggle between light and dark theme
+- **Social sharing** — share tasting journal entries with friends
 ---
 
 ## 👨‍💻 Author
 
-**Erdenesuren Shirmen**  
+**Erdenesuren Shirmen**
 Built with Kotlin + Jetpack Compose as a class project demonstrating modern Android development with cloud and local data persistence.
  
 ---
