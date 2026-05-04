@@ -92,69 +92,6 @@ private val questions = listOf(
 )
 
 @Composable
-fun CoffeeCard(coffee: Coffee, onClick: () -> Unit) {
-    val roastColor = when (coffee.roast) {
-        "Light" -> MaterialTheme.colorScheme.tertiary
-        "Medium" -> MaterialTheme.colorScheme.secondary
-        "Dark" -> MaterialTheme.colorScheme.error
-        else -> MaterialTheme.colorScheme.primary
-    }
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable { onClick() },
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    coffee.name,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.weight(1f)
-                )
-                Surface(
-                    color = roastColor.copy(alpha = 0.15f),
-                    shape = MaterialTheme.shapes.small
-                ) {
-                    Text(
-                        "${coffee.roast} Roast",
-                        fontSize = 11.sp,
-                        color = roastColor,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                    )
-                }
-            }
-            Spacer(Modifier.height(4.dp))
-            Text(
-                coffee.notes,
-                color = MaterialTheme.colorScheme.secondary,
-                fontSize = 14.sp
-            )
-            Spacer(Modifier.height(4.dp))
-            Text(
-                coffee.description,
-                fontSize = 13.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(Modifier.height(8.dp))
-            Text(
-                "Tap to see details →",
-                fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
-    }
-}
-
-@Composable
 fun CoffeeDetailScreen(coffee: Coffee, onBack: () -> Unit) {
     val viewModel: JournalViewModel = viewModel()
     val isInWishlist by viewModel.isInWishlist(coffee.name).collectAsState(initial = false)
