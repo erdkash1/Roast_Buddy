@@ -93,65 +93,7 @@ private val questions = listOf(
 
 
 
-@Composable
-fun JournalScreen(navController: NavController) {
-    val viewModel: JournalViewModel = viewModel()
-    val entries by viewModel.entries.collectAsState()
-    var showForm by remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            TextButton(onClick = { navController.popBackStack() }) { Text("< Back") }
-            Text("Tasting Journal", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-            TextButton(onClick = { showForm = true }) { Text("+ Add") }
-        }
-
-        if (showForm) {
-            AddEntryForm(
-                onSave = { name, roast, rating, notes ->
-                    viewModel.addEntry(name, roast, rating, notes)
-                    showForm = false
-                },
-                onCancel = { showForm = false }
-            )
-        }
-
-        if (entries.isEmpty()) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No entries yet. Tap + Add to log a coffee!")
-            }
-        } else {
-            LazyColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
-                items(entries) { entry ->
-                    Card(
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(entry.coffeeName, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                                Text(entry.date, fontSize = 12.sp, color = MaterialTheme.colorScheme.secondary)
-                            }
-                            Text("${entry.roastLevel} Roast", color = MaterialTheme.colorScheme.primary)
-                            Text("⭐".repeat(entry.rating), fontSize = 18.sp)
-                            if (entry.notes.isNotEmpty()) {
-                                Spacer(Modifier.height(4.dp))
-                                Text(entry.notes, fontSize = 14.sp)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
 
 @Composable
 fun AddEntryForm(onSave: (String, String, Int, String) -> Unit, onCancel: () -> Unit) {
