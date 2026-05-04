@@ -92,61 +92,10 @@ private val questions = listOf(
 )
 
 
-// ── Result ────────────────────────────────────────────────────────────────────
-
-@Composable
-fun ResultScreen(navController: NavController, viewModel: CoffeeViewModel) {
-    val recommendation by viewModel.recommendation.collectAsState()
-    val isLoading by viewModel.isLoadingRec.collectAsState()
-
-    Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text("Your AI-Powered Match", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-        Spacer(Modifier.height(24.dp))
-
-        if (isLoading) {
-            CircularProgressIndicator()
-            Spacer(Modifier.height(16.dp))
-            Text("Brewing your recommendation...", color = MaterialTheme.colorScheme.secondary)
-        } else {
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Why we picked this for you:", fontWeight = FontWeight.Bold)
-                    Spacer(Modifier.height(8.dp))
-                    Text(recommendation ?: "No recommendation received.")
-                }
-            }
-            Spacer(Modifier.height(16.dp))
-
-            Button(
-                onClick = { navController.navigate("catalog") },
-                modifier = Modifier.fillMaxWidth().height(50.dp)
-            ) {
-                Text("See Full Catalog")
-            }
-
-            Spacer(Modifier.height(12.dp))
-
-            OutlinedButton(
-                onClick = {
-                    viewModel.quizAnswers.clear()
-                    navController.navigate("home") {
-                        popUpTo("home") { inclusive = true }
-                    }
-                },
-                modifier = Modifier.fillMaxWidth().height(50.dp)
-            ) {
-                Text("Back to Home")
-            }
-        }
-    }
-}
 
 
-// ── Catalog ───────────────────────────────────────────────────────────────────
+
+
 
 @Composable
 fun CatalogScreen(navController: NavController, viewModel: CoffeeViewModel) {
