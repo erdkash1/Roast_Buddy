@@ -91,44 +91,6 @@ private val questions = listOf(
             listOf("Light & Delicate", "Balanced", "Strong & Intense", "Extra Bold")
 )
 
-@Composable
-fun QuizScreen(navController: NavController, viewModel: CoffeeViewModel) {
-    var currentQ by remember { mutableIntStateOf(0) }
-    val (questionText, options) = questions[currentQ]
-
-    Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            "Question ${currentQ + 1} of ${questions.size}",
-            color = MaterialTheme.colorScheme.secondary
-        )
-        Spacer(Modifier.height(8.dp))
-        Text(questionText, fontSize = 22.sp, fontWeight = FontWeight.Medium)
-        Spacer(Modifier.height(24.dp))
-
-        options.forEach { option ->
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-                    .clickable {
-                        viewModel.quizAnswers.add(option)
-                        if (currentQ < questions.size - 1) {
-                            currentQ++
-                        } else {
-                            viewModel.fetchRecommendation()
-                            navController.navigate("result")
-                        }
-                    },
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-            ) {
-                Text(text = option, modifier = Modifier.padding(16.dp), fontSize = 18.sp)
-            }
-        }
-    }
-}
 
 // ── Result ────────────────────────────────────────────────────────────────────
 
