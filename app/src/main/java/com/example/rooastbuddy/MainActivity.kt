@@ -236,56 +236,6 @@ fun EducationScreen(navController: NavController) {
         }
     }
 }
-@Composable
-fun WishlistScreen(navController: NavController) {
-    val viewModel: JournalViewModel = viewModel()
-    val wishlist by viewModel.wishlist.collectAsState()
-
-    Column(modifier = Modifier.fillMaxSize()) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            TextButton(onClick = { navController.popBackStack() }) { Text("< Back") }
-            Text(
-                "My Wishlist",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(start = 8.dp)
-            )
-        }
-
-        if (wishlist.isEmpty()) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No items yet. Browse the catalog and add coffees!")
-            }
-        } else {
-            LazyColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
-                items(wishlist) { item ->
-                    Card(
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(item.name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                                Text("${item.roast} Roast", color = MaterialTheme.colorScheme.secondary)
-                                Text(item.notes, fontSize = 13.sp)
-                            }
-                            IconButton(onClick = { viewModel.removeFromWishlist(item) }) {
-                                Text("✕", color = MaterialTheme.colorScheme.error)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
 
 
 
