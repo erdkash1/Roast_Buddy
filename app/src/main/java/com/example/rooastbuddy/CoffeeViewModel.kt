@@ -1,3 +1,13 @@
+/**
+ * CoffeeViewModel.kt
+ *
+ * ViewModel responsible for managing the coffee catalog and quiz recommendation logic.
+ * Handles fetching the artisanal coffee catalog from Firebase Firestore and
+ * generating personalized coffee recommendations based on quiz answers.
+ *
+ * Uses StateFlow for reactive UI updates and coroutines for async operations.
+ */
+
 package com.example.rooastbuddy
 
 import androidx.lifecycle.ViewModel
