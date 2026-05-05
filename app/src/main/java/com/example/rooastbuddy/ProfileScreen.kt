@@ -1,3 +1,12 @@
+/**
+ * ProfileScreen.kt
+ *
+ * Displays the user's saved profile and allows them to edit it.
+ * Shows a coffee cup avatar, name, experience level, and preferred brew method.
+ * In edit mode, the user can update their name, brew method, and experience level.
+ * All changes are persisted to DataStore via ProfileViewModel.
+ */
+
 package com.example.rooastbuddy
 
 import androidx.compose.foundation.background
