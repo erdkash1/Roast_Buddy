@@ -1,3 +1,13 @@
+/**
+ * ResultScreen.kt
+ *
+ * Displays the personalized coffee recommendation generated after the quiz.
+ * Shows a loading spinner while the recommendation is being generated,
+ * then reveals the result with an explanation of why it was chosen.
+ * Provides navigation to the full catalog and an option to retake the quiz.
+ */
+
+
 package com.example.rooastbuddy
 
 import androidx.compose.foundation.layout.Arrangement
