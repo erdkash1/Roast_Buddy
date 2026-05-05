@@ -1,3 +1,12 @@
+/**
+ * CatalogScreen.kt
+ *
+ * Displays the artisanal coffee catalog fetched from Firebase Firestore.
+ * Supports filtering by roast level (All, Light, Medium, Dark) and
+ * navigating to a detail view for any selected coffee.
+ * Handles loading and empty states gracefully.
+ */
+
 package com.example.rooastbuddy
 
 import androidx.compose.foundation.layout.Arrangement
