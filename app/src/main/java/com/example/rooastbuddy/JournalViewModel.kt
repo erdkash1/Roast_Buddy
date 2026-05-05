@@ -1,3 +1,13 @@
+/**
+ * JournalViewModel.kt
+ *
+ * ViewModel responsible for managing the Tasting Journal and Wishlist features.
+ * Provides reactive StateFlow streams for journal entries and wishlist items,
+ * both stored locally using the Room database via JournalDao.
+ *
+ * Extends AndroidViewModel to access application context for Room database initialization.
+ */
+
 package com.example.rooastbuddy
 
 import android.app.Application
