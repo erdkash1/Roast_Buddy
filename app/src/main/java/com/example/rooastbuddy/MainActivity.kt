@@ -1,3 +1,13 @@
+/**
+ * MainActivity.kt
+ *
+ * The single entry point of the Roast Buddy Android application.
+ * Sets up the Compose UI, applies the custom theme, and hosts the
+ * NavHost which manages navigation between all app screens.
+ *
+ * Architecture: Single-Activity with Jetpack Compose + Navigation Compose
+ */
+
 package com.example.rooastbuddy
 
 import android.os.Bundle
