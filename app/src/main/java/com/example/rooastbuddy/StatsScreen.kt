@@ -1,3 +1,12 @@
+/**
+ * StatsScreen.kt
+ *
+ * Displays personal coffee analytics derived from the user's tasting journal.
+ * Shows total coffees tried, average star rating, favorite roast level,
+ * highest rated coffee, and a visual roast breakdown with progress bars.
+ * All data is computed from Room database entries in real time.
+ */
+
 package com.example.rooastbuddy
 
 import androidx.compose.foundation.layout.Arrangement
