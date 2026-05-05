@@ -1,3 +1,12 @@
+/**
+ * JournalScreen.kt
+ *
+ * Displays the user's tasting journal — a log of coffees they have tried.
+ * Each entry shows the coffee name, roast level, star rating, tasting notes, and date.
+ * Users can add new entries via the AddEntryForm which appears inline at the top.
+ * All entries are persisted locally using the Room database.
+ */
+
 package com.example.rooastbuddy
 
 import androidx.compose.foundation.layout.Arrangement
