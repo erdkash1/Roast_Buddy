@@ -1,3 +1,12 @@
+/**
+ * CoffeeDetailScreen.kt
+ *
+ * Full detail view for a selected coffee from the catalog.
+ * Shows tasting notes, description, brew recommendation based on roast level,
+ * and an Add/Remove Wishlist button that persists to the Room database.
+ * Also includes a mock checkout button as a placeholder for future payment integration.
+ */
+
 package com.example.rooastbuddy
 
 import androidx.compose.foundation.layout.Column
