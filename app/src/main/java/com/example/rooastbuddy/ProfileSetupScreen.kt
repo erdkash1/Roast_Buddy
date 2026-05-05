@@ -1,3 +1,12 @@
+/**
+ * ProfileSetupScreen.kt
+ *
+ * Onboarding screen shown on the app's first launch when no profile exists.
+ * Collects the user's name, preferred brew method, and coffee experience level.
+ * Saves the data to DataStore via ProfileViewModel and navigates to HomeScreen.
+ * The setup screen is never shown again after the profile is saved.
+ */
+
 package com.example.rooastbuddy
 
 import androidx.compose.foundation.layout.Arrangement
