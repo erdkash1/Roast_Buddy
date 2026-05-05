@@ -1,3 +1,13 @@
+/**
+ * EducationScreen.kt
+ *
+ * Displays a curated collection of coffee education resources including
+ * articles and videos. Users can filter by category and tap any card
+ * to open the linked resource directly in the device's browser.
+ *
+ * Categories: Roast Guide, Brew Methods, Tasting, Origins, Equipment, Video
+ */
+
 package com.example.rooastbuddy
 
 import androidx.compose.foundation.clickable
