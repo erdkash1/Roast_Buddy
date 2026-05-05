@@ -1,3 +1,13 @@
+/**
+ * AddEntryForm.kt
+ *
+ * A composable form card for logging a new coffee tasting entry.
+ * Allows the user to input the coffee name, select a roast level via chips,
+ * set a star rating with a slider, and write personal tasting notes.
+ * Validates that the coffee name is not empty before saving.
+ */
+
+
 package com.example.rooastbuddy
 
 import androidx.compose.foundation.layout.Arrangement
