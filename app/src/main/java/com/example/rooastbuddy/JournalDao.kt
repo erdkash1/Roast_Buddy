@@ -1,3 +1,12 @@
+/**
+ * JournalDao.kt
+ *
+ * Data Access Object (DAO) interface for Room database operations.
+ * Provides methods for reading and writing both JournalEntry and WishlistItem records.
+ * All query results are returned as Flow streams for reactive UI updates.
+ */
+
+
 package com.example.rooastbuddy
 
 
