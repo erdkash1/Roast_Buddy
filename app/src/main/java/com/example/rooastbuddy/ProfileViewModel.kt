@@ -1,3 +1,12 @@
+/**
+ * ProfileViewModel.kt
+ *
+ * ViewModel responsible for managing the user's profile preferences.
+ * Reads and writes user data (name, brew method, experience level) using
+ * Jetpack DataStore for persistent key-value storage across app sessions.
+ */
+
+
 package com.example.rooastbuddy
 
 import android.app.Application
