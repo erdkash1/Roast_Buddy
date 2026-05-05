@@ -1,3 +1,13 @@
+/**
+ * WishlistScreen.kt
+ *
+ * Displays the user's saved coffee wishlist from the Room database.
+ * Each item shows the coffee name, roast level, and tasting notes,
+ * with a remove button to delete items from the wishlist.
+ * Shows an empty state message when no items are saved.
+ */
+
+
 package com.example.rooastbuddy
 
 import androidx.compose.foundation.layout.Arrangement

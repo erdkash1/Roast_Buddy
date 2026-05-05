@@ -1,3 +1,13 @@
+/**
+ * UserPreferences.kt
+ *
+ * Manages persistent user profile data using Jetpack DataStore (Preferences).
+ * DataStore provides an asynchronous, consistent key-value storage solution
+ * that replaces SharedPreferences with better coroutine and Flow support.
+ *
+ * Stores: user name, preferred brew method, and coffee experience level.
+ */
+
 package com.example.rooastbuddy
 
 import android.content.Context
