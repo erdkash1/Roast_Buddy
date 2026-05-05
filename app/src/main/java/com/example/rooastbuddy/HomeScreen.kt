@@ -1,3 +1,12 @@
+/**
+ * HomeScreen.kt
+ *
+ * The main landing screen of Roast Buddy, displayed after profile setup.
+ * Shows a personalized hero banner with the user's name and coffee preferences,
+ * a prominent quiz call-to-action card, a 2x2 feature grid for quick navigation,
+ * and an Education Hub banner at the bottom.
+ */
+
 package com.example.rooastbuddy
 
 import androidx.compose.foundation.background
