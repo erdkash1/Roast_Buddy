@@ -1,3 +1,12 @@
+/**
+ * QuizScreen.kt
+ *
+ * Displays the 3-question Roast Finder Quiz one question at a time.
+ * Each answer is recorded in the CoffeeViewModel and the next question is shown.
+ * After the final answer, the recommendation is generated and the user is
+ * navigated to the ResultScreen.
+ */
+
 package com.example.rooastbuddy
 
 import androidx.compose.foundation.clickable
