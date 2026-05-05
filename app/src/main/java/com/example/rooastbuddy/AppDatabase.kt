@@ -1,3 +1,14 @@
+/**
+ * AppDatabase.kt
+ *
+ * Room database definition for the Roast Buddy app.
+ * Manages local persistence for tasting journal entries and wishlist items.
+ * Uses a singleton pattern to ensure only one database instance exists.
+ *
+ * Database version: 2 (added WishlistItem table in v2)
+ */
+
+
 package com.example.rooastbuddy
 
 import android.content.Context
