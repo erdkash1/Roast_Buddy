@@ -1,3 +1,11 @@
+/**
+ * CoffeeCard.kt
+ *
+ * Reusable composable that displays a single coffee item in the catalog list.
+ * Shows the coffee name, a color-coded roast level badge, tasting notes,
+ * description, and a tap hint for navigating to the detail screen.
+ */
+
 package com.example.rooastbuddy
 
 import androidx.compose.foundation.clickable
